@@ -20,38 +20,25 @@ public:
           status(p_status) {}
 
     virtual ~Aeroporto() = default;
-    
-    void set_pistas(std::vector<std::string>& pistas_cadastradas) {
-        if (pistas_cadastradas.empty()) {
-            throw std::invalid_argument("[ERRO]: Lista de pistas do aeroporto está vazia");
-            return;
-        }
-        pistas_cadastradas = pistas;
+
+    bool validar_codigo(std::string codigo) {
+
     }
 
-    virtual void set_status(std::string& status_operacao) {
-        if (status_operacao.empty()) {
-            throw std::invalid_argument("[ERRO]: Status vazio");
-            return;
-        }
+    void cadastrar_aviao(std::string aviao) {
 
-        for (const auto& i : status_possiveis) {
-            if (i == status_operacao) {
-                std::cout << "[SUCESSO]: Status alterado com sucesso";
-                status_operacao = status;
-                return;
-            }
-        }
-
-        throw std::invalid_argument("[ERRO]: Status invalido");
     }
 
-    const std::vector<std::string>& get_pistas() {
-        return pistas;
+    void criar_voo(std::string voo) {
+
     }
 
-    const std::string get_status() {
-        return status;
+    void buscar_voo(std::string) {
+
+    }
+
+    virtual void alterar_status(std::string novo_status) {
+
     }
 
     virtual void exibir_resumo() {
