@@ -12,22 +12,22 @@ class Aeronave:
         self.__peso_decolagem = peso_decolagem
 
     def get_num_motores(self):
-        return self.__num_motores
+        return int(self.__num_motores)
 
     def get_altitude_cruzeiro(self):
-        return self.__altitude_cruzeiro
+        return int(self.__altitude_cruzeiro)
 
     def get_velocidade_maxima(self):
-        return self.__velocidade_maxima
+        return float(self.__velocidade_maxima)
 
     def get_combustivel(self):
-        return self.__combustivel
+        return int(self.__combustivel)
 
     def get_modelo(self):
         return self.__modelo
 
     def get_peso_decolagem(self):
-        return self.__peso_decolagem
+        return str(self.__peso_decolagem)
 
     @abstractmethod
     def decolar(self):
@@ -169,7 +169,7 @@ class AviaoMilitar(Aeronave):
 
         # 2. Performance e Aviônica
         print(f"Teto Operacional: FL{self.get_altitude_cruzeiro() // 100} ({self.get_altitude_cruzeiro()} ft)")
-        print(f"Velocidade Limite: {self.get_velocidade_maxima()} km/h (Supersônico)")
+        print(f"Velocidade Limite: {self.get_velocidade_maxima()} MACH (Supersônico)")
         print("Sistemas Aviônicos: Radar AESA ativo | RWR operacional | ECM ligado")
         time.sleep(1.2)
 
@@ -324,7 +324,7 @@ class AviaoComercial(Aeronave):
 
         # 2. Performance e Navegação
         print(f"Teto de Cruzeiro Homologado: FL{self.get_altitude_cruzeiro() // 100} ({self.get_altitude_cruzeiro()} ft)")
-        print(f"Velocidade Limite (VMO/MMO): {self.get_velocidade_maxima()} km/h")
+        print(f"Velocidade Limite (VMO/MMO): {self.get_velocidade_maxima()} MACH")
         print("Sistemas Aviônicos: TCAS II integrado | FMS/RNAV calibrado | Weather Radar ativo")
         time.sleep(1.2)
 
@@ -373,6 +373,48 @@ def main():
             exibir_status_avioes()
         else:
             print("[ERRO]: Modo invalido")
+
+def exibir_status_avioes():
+    for aviao in avioes:
+        aviao.status_aeronave()
+
+def cadastrar_aviao_comercial():
+    try:
+        modelo = str(input("Digite o modelo da aeronave: ")).strip()
+        if not modelo:
+            raise ValueError("[ERRO]: Preencha o modelo corretamente")
+
+        num_motores = input("Digite o numero de motores da aeronave: ").strip()
+        if not num_motores or not num_motores.isdigit() or int(num_motores) < 1:
+            raise ValueError("[ERRO]: São aceitos somente numeros maiores que 1 neste campo")
+        
+        altitude_cruzeiro = input("Digite a altitude de cruzeiro da aeronave: ").strip()
+        if not altitude_cruzeiro or not altitude_cruzeiro.isdigit() or int(altitude_cruzeiro) < 400 :
+            raise ValueError("[ERRO]: São aceitos somente numeros maiores que 400 neste campo")
+
+        velocidade_maxima = input("Digite a velocidade maxima da aeronave (MACH): ").strip()
+        if not velocidade_maxima or not velocidade_maxima.replace('.', '', 1).isdecimal() or 1.0 >= float(velocidade_maxima) < 0.1:
+            raise ValueError("[ERRO]: São aceitos somente numeros maiores que 0.1 e menores que 1.0 neste campo")
+
+        combustivel = input("Digite quantas libras de combustivel sua aeronave tem: ").strip()
+        if not combustivel or not combustivel.isdigit() or int(combustivel) <= 0:
+            raise ValueError("[ERRO]: Numero inválido para o combustivel")
+
+        peso_decolagem = input("Digite o peso de decolagem em kg de sua aeronave: ").strip()
+        if not peso_decolagem or not peso_decolagem.isdigit() or int(peso_decolagem) < 2100 :
+            raise ValueError("[ERRO]: Peso de decolagem invalido, deve ser maior que 2100kg")
+
+        numero_assentos = input("Digite o numero de assentos de sua aeronave: ")
+        if not numero_assentos or numero_assentos.isdigit() or int(numero_assentos) <= 0:
+            raise ValueError("[ERRO]: O numero de assentos deve ser maior que 0")
+
+        novo_aviao = AviaoComercial(modelo, num_motores, altitude_cruzeiro, velocidade_maxima, combustivel, peso_decolagem, numero_assentos)
+        avioes.append(novo_aviao)
+        print("[SUCESSO]: Avião cadastrado com sucesso!")
+    except ValueError as erro:
+        print(erro)
+        return
+
 
 def cadastrar_aviao_militar():
     try:
