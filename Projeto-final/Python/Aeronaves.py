@@ -345,9 +345,11 @@ class AviaoComercial(Aeronave):
         time.sleep(0.8)
         print("DIAGNÓSTICO FINAL: Aeronavegabilidade 100%. Pronta para a malha aérea regular!", "PRONTO")
 
+
 avioes = []
 
 def exibir_opcoes():
+    print("0. Sair")
     print("1. Cadastrar aviao militar")
     print("2. Cadastrar aviao comercial")
     print("3. Exibir status de todos os avioes")
@@ -360,16 +362,69 @@ def main():
         except ValueError:
             print("[ERRO]: Digite apenas números inteiros e válidos\n")
 
-        if modo == 1:
+        if modo == 0:
+            print("Saindo...")
+            break
+        elif modo == 1:
             cadastrar_aviao_militar()
         elif modo == 2:
             cadastrar_aviao_comercial()
         elif modo == 3:
             exibir_status_avioes()
+        else:
+            print("[ERRO]: Modo invalido")
 
+def cadastrar_aviao_militar():
+    try:
+        modelo = str(input("Digite o modelo da aeronave: ")).strip()
+        if not modelo:
+            raise ValueError("[ERRO]: Preencha o modelo corretamente")
 
+        num_motores = input("Digite o numero de motores da aeronave: ").strip()
+        if not num_motores or not num_motores.isdigit() or int(num_motores) < 1:
+            raise ValueError("[ERRO]: São aceitos somente numeros maiores que 1 neste campo")
+        
+        altitude_cruzeiro = input("Digite a altitude de cruzeiro da aeronave: ").strip()
+        if not altitude_cruzeiro or not altitude_cruzeiro.isdigit() or int(altitude_cruzeiro) < 100:
+            raise ValueError("[ERRO]: São aceitos somente numeros maiores que 100 neste campo")
 
+        velocidade_maxima = input("Digite a velocidade maxima da aeronave (MACH): ").strip()
+        if not velocidade_maxima or not velocidade_maxima.replace('.', '', 1).isdecimal() or float(velocidade_maxima) < 0.1:
+            raise ValueError("[ERRO]: São aceitos somente numeros maiores que 0.1 neste campo")
 
+        combustivel = input("Digite quantas libras de combustivel sua aeronave tem: ").strip()
+        if not combustivel or not combustivel.isdigit() or int(combustivel) <= 0:
+            raise ValueError("[ERRO]: Numero inválido para o combustivel")
+
+        peso_decolagem = input("Digite o peso de decolagem em kg de sua aeronave: ").strip()
+        if not peso_decolagem or not peso_decolagem.isdigit() or int(peso_decolagem) < 2500:
+            raise ValueError("[ERRO]: Peso de decolagem invalido, deve ser maior que 2500kg")
+
+        print("============================================")
+        print("=== DIGITE OS ARMAMENTOS DE SUA AERONAVE ===")
+        print("============================================")
+
+        print("[AVISO]: Para parar de cadastrar armamentos, digite 'parar'")
+
+        verificar_parada = None
+        indice_armamento = 1
+        armamentos = []
+        while verificar_parada != "parar":
+            armamento = input(f"{indice_armamento}° armamento: ").strip()
+            if not armamento:
+                print("[ERRO]: Digite um armamento para continuar!")
+                continue
+
+            armamentos.append(armamento)
+            indice_armamento += 1
+            verificar_parada = armamento.lower()
+
+        novo_aviao = AviaoMilitar(modelo, num_motores, altitude_cruzeiro, velocidade_maxima, combustivel, peso_decolagem, armamentos)
+        avioes.append(novo_aviao)
+        print("[SUCESSO]: Avião cadastrado com sucesso!")
+    except ValueError as erro:
+        print(erro)
+        return
     
 if __name__ == "__main__":
     main()
