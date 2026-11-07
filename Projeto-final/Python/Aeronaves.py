@@ -2,7 +2,7 @@ import time
 from abc import ABC, abstractmethod
 
 class Aeronave:
-    def __init__(self, modelo, num_motores, altitude_cruzeiro, velocidade_maxima, combustivel, peso_decolagem):
+    def __init__(self, modelo, num_motores, altitude_cruzeiro, velocidade_maxima, combustivel, peso_decolagem, esta_no_ar):
 
         self.__num_motores = num_motores
         self.__altitude_cruzeiro = altitude_cruzeiro
@@ -10,25 +10,37 @@ class Aeronave:
         self.__combustivel = combustivel
         self.__modelo = modelo
         self.__peso_decolagem = peso_decolagem
+        self.__esta_no_ar = esta_no_ar
 
     def get_num_motores(self):
-        return int(self.__num_motores)
+        return self.__num_motores
 
     def get_altitude_cruzeiro(self):
-        return int(self.__altitude_cruzeiro)
+        return self.__altitude_cruzeiro
 
     def get_velocidade_maxima(self):
-        return float(self.__velocidade_maxima)
+        return self.__velocidade_maxima
 
     def get_combustivel(self):
-        return int(self.__combustivel)
+        return self.__combustivel
 
     def get_modelo(self):
         return self.__modelo
 
     def get_peso_decolagem(self):
-        return str(self.__peso_decolagem)
+        return self.__peso_decolagem
 
+    def get_esta_no_ar(self):
+        return self.__esta_no_ar
+
+    def setter_esta_no_ar(self, estado: bool):
+        if estado == self.__esta_no_ar:
+            if self.__esta_no_ar:
+                raise ValueError("[AVISO]: O avião ja está no ar!")
+            else:
+                raise ValueError("[AVISO]: O avião ja está no chão!")
+        self.__esta_no_ar = estado
+        
     @abstractmethod
     def decolar(self):
         pass
@@ -42,8 +54,8 @@ class Aeronave:
         pass
 
 class AviaoMilitar(Aeronave):
-    def __init__(self, modelo, num_motores, altitude_cruzeiro, velocidade_maxima, combustivel, peso_decolagem, armamentos):
-        super().__init__(modelo, num_motores, altitude_cruzeiro, velocidade_maxima, combustivel, peso_decolagem)
+    def __init__(self, modelo, num_motores, altitude_cruzeiro, velocidade_maxima, combustivel, peso_decolagem, esta_no_ar, armamentos):
+        super().__init__(modelo, num_motores, altitude_cruzeiro, velocidade_maxima, combustivel, peso_decolagem, esta_no_ar)
 
         self.armamentos = armamentos
 
@@ -51,6 +63,10 @@ class AviaoMilitar(Aeronave):
         print("=" * 65)
         print(f"  INICIANDO PROTOCOLO DE DECOLAGEM TÁTICA: {self.get_modelo().upper()}")
         print("=" * 65)
+
+        if self.get_esta_no_ar() == True:
+            print("[ERRO]: Este avião ja decolou")
+            return
 
         # 1. Checagens pré-voo
         print(f"Verificando pesos e combustível. TOW: {self.get_peso_decolagem()} kg | FOB: {self.get_combustivel()} kg.")
@@ -70,9 +86,9 @@ class AviaoMilitar(Aeronave):
         time.sleep(1.0)
 
         # 3. Corrida na pista e velocidades de decisão
-        v1 = int(self.get_velocidade_maxima() * 0.12)
-        vr = int(self.get_velocidade_maxima() * 0.14)
-        v2 = int(self.get_velocidade_maxima() * 0.17)
+        v1 = int(self.get_velocidade_maxima()) * 0.12
+        vr = int(self.get_velocidade_maxima()) * 0.14
+        v2 = int(self.get_velocidade_maxima()) * 0.17
 
         print("Pós-combustores ligados! Manetes no máximo (FULL AFTERBURNER)!")
         for v in [
@@ -83,13 +99,15 @@ class AviaoMilitar(Aeronave):
         ]:
             time.sleep(1.5)
 
+        self.setter_esta_no_ar(True)
+
         print("Subida vertical positiva. Trem de pouso recolhido (Gear Up).", "SISTEMAS")
         time.sleep(1.5)
 
         # 4. Subida até o nível de cruzeiro
         print(f"Subindo em ângulo tático até o teto de serviço ({self.get_altitude_cruzeiro()} ft)")
 
-        print(f"Teto de serviço atingido: FL{self.get_altitude_cruzeiro() // 100}. SUCESSO")
+        print(f"Teto de serviço atingido: FL{int(self.get_altitude_cruzeiro()) // 100}. SUCESSO")
         print(f"Radar em modo de combate varrendo a {self.get_velocidade_maxima()} km/h. INFO")
         print("=" * 65 + "\n")
 
@@ -98,10 +116,14 @@ class AviaoMilitar(Aeronave):
         print(f"  INICIANDO PROTOCOLO DE POUSO TÁTICO: {self.get_modelo().upper()}")
         print("=" * 65)
 
+        if self.get_esta_no_ar() == False:
+            print("[ERRO]: Este avião já está no solo")
+            return
+        
         # 1. Início da descida tática e checagens
-        print(f"Iniciando descida tática a partir de FL{self.get_altitude_cruzeiro() // 100} ({self.get_altitude_cruzeiro()} ft).")
-        combustivel_restante = int(self.get_combustivel() * 0.25)
-        peso_pouso = int(self.get_peso_decolagem() * 0.70)
+        print(f"Iniciando descida tática a partir de FL{int(self.get_altitude_cruzeiro()) // 100} ({self.get_altitude_cruzeiro()} ft).")
+        combustivel_restante = int(self.get_combustivel()) * 0.25
+        peso_pouso = int(self.get_peso_decolagem()) * 0.70
         print(f"Checando peso de pouso: {peso_pouso} kg | Combustível remanescente: {combustivel_restante} kg.")
         time.sleep(1.5)
 
@@ -119,7 +141,7 @@ class AviaoMilitar(Aeronave):
         time.sleep(1.5)
 
         # 3. Configuração da aeronave e velocidades
-        vref = int(self.get_velocidade_maxima() * 0.13)
+        vref = int(self.get_velocidade_maxima()) * 0.13
         vapp = vref + 10
 
         print(f"Velocidade reduzida para aproximação final ({vapp} kt).")
@@ -144,6 +166,8 @@ class AviaoMilitar(Aeronave):
             print(mensagem)
             time.sleep(pausa)
 
+        self.setter_esta_no_ar(False)
+
         # 5. Desaceleração e dispersão para o abrigo blindado
         print("Aerofreios abertos e paraquedas de arrasto (Drag Chute) desdobrado!")
         time.sleep(1.5)
@@ -162,13 +186,13 @@ class AviaoMilitar(Aeronave):
         print("=" * 65)
 
         # 1. Telemetria e Propulsão
-        print(f"Aeronave: {self.get_modelo().upper()} | Configuração: TÁTICA MILITAR")
+        print(f"Aeronave: {self.get_modelo()} | Configuração: TÁTICA MILITAR")
         print(f"Propulsão: {self.get_num_motores()} turbina(s) com pós-combustor | Status: OPERACIONAL")
         print(f"Peso Total (TOW): {self.get_peso_decolagem()} kg | Combustível FOB: {self.get_combustivel()} kg")
         time.sleep(1.0)
 
         # 2. Performance e Aviônica
-        print(f"Teto Operacional: FL{self.get_altitude_cruzeiro() // 100} ({self.get_altitude_cruzeiro()} ft)")
+        print(f"Teto Operacional: FL{int(self.get_altitude_cruzeiro()) // 100} ({self.get_altitude_cruzeiro()} ft)")
         print(f"Velocidade Limite: {self.get_velocidade_maxima()} MACH (Supersônico)")
         print("Sistemas Aviônicos: Radar AESA ativo | RWR operacional | ECM ligado")
         time.sleep(1.2)
@@ -191,8 +215,8 @@ class AviaoMilitar(Aeronave):
         print("=" * 65 + "\n")
 
 class AviaoComercial(Aeronave):
-    def __init__(self, modelo, num_motores, altitude_cruzeiro, velocidade_maxima, combustivel, peso_decolagem, numero_assentos):
-            super().__init__(modelo, num_motores, altitude_cruzeiro, velocidade_maxima, combustivel, peso_decolagem)
+    def __init__(self, modelo, num_motores, altitude_cruzeiro, velocidade_maxima, combustivel, peso_decolagem, esta_no_ar, numero_assentos):
+            super().__init__(modelo, num_motores, altitude_cruzeiro, velocidade_maxima, combustivel, peso_decolagem, esta_no_ar)
     
             self.numero_assentos = numero_assentos
 
@@ -200,6 +224,10 @@ class AviaoComercial(Aeronave):
         print("=" * 65)
         print(f"   INICIANDO PROTOCOLO DE DECOLAGEM COMERCIAL: {self.get_modelo().upper()}")
         print("=" * 65)
+
+        if self.get_esta_no_ar() == True:
+            print("[ERRO]: Este avião ja decolou")
+            return
 
         # 1. Procedimentos de cabine e pré-voo
         print(f"Aeronave comercial configurada para {self.numero_assentos} assentos.")
@@ -222,9 +250,9 @@ class AviaoComercial(Aeronave):
         time.sleep(1.0)
 
         # 3. Corrida de pista e velocidades operacionais
-        v1 = int(self.get_velocidade_maxima() * 0.15)
-        vr = int(self.get_velocidade_maxima() * 0.17)
-        v2 = int(self.get_velocidade_maxima() * 0.20)
+        v1 = int(self.get_velocidade_maxima()) * 0.15
+        vr = int(self.get_velocidade_maxima()) * 0.17
+        v2 = int(self.get_velocidade_maxima()) * 0.20
 
         print("Potência de decolagem ajustada (FLEX/TOGA). Corrida iniciada.")
         etapas_decolagem = [
@@ -238,15 +266,17 @@ class AviaoComercial(Aeronave):
             print(mensagem)
             time.sleep(pausa)
 
+        self.setter_esta_no_ar(True)
+
         print("Razão positiva confirmada. Trem de pouso recolhido (Gear Up).", "SISTEMAS")
         time.sleep(1.5)
 
         # 4. Subida, pressurização e nível de cruzeiro
-        print(f"Subida padrão via saída por instrumentos (SID) até FL{self.get_altitude_cruzeiro() // 100}.")
+        print(f"Subida padrão via saída por instrumentos (SID) até FL{int(self.get_altitude_cruzeiro()) // 100}.")
         print("Altitude de cabine estabilizada a 7.500 ft (Pressurização normal).")
         time.sleep(1.2)
-        print(f"Nível de cruzeiro atingido: FL{self.get_altitude_cruzeiro() // 100} ({self.get_altitude_cruzeiro()} ft).")
-        print(f"Velocidade de cruzeiro mantida a {self.get_velocidade_maxima() * 0.82:.0f} km/h (Mach econômico).")
+        print(f"Nível de cruzeiro atingido: FL{int(self.get_altitude_cruzeiro()) // 100} ({self.get_altitude_cruzeiro()} ft).")
+        print(f"Velocidade de cruzeiro mantida a {int(self.get_velocidade_maxima()) * 0.82:.0f} km/h (Mach econômico).")
         print("Sinal de atar cintos desligado. Serviço de bordo liberado para os passageiros.")
         print("=" * 65 + "\n")
 
@@ -255,10 +285,14 @@ class AviaoComercial(Aeronave):
         print(f"   INICIANDO PROTOCOLO DE POUSO COMERCIAL: {self.get_modelo().upper()}")
         print("=" * 65)
 
+        if self.get_esta_no_ar() == False:
+            print("[ERRO]: Este avião já está no solo")
+            return
+
         # 1. Top of Descent (TOD) e preparação da cabine
-        print(f"Início da descida a partir de FL{self.get_altitude_cruzeiro() // 100} ({self.get_altitude_cruzeiro()} ft).")
-        combustivel_restante = int(self.get_combustivel() * 0.22)
-        peso_pouso = int(self.get_peso_decolagem() * 0.78)
+        print(f"Início da descida a partir de FL{int(self.get_altitude_cruzeiro()) // 100} ({self.get_altitude_cruzeiro()} ft).")
+        combustivel_restante = int(self.get_combustivel()) * 0.22
+        peso_pouso = int(self.get_peso_decolagem()) * 0.78
         print(f"Peso estimado de pouso (MLW): {peso_pouso} kg | Combustível remanescente: {combustivel_restante} kg.")
         time.sleep(1.2)
 
@@ -273,7 +307,7 @@ class AviaoComercial(Aeronave):
         time.sleep(1.2)
 
         # 3. Configuração de aproximação final
-        vref = int(self.get_velocidade_maxima() * 0.14)
+        vref = int(self.get_velocidade_maxima()) * 0.14
         vapp = vref + 5
 
         print(f"Reduzindo para velocidade de aproximação (Vapp: {vapp} kt).")
@@ -298,6 +332,8 @@ class AviaoComercial(Aeronave):
             print(mensagem)
             time.sleep(pausa)
 
+        self.setter_esta_no_ar(False)
+
         # 5. Desaceleração, táxi e desembarque
         print("Reversores acionados e ground spoilers abertos automaticamente.")
         time.sleep(1.4)
@@ -317,13 +353,13 @@ class AviaoComercial(Aeronave):
         print("=" * 65)
 
         # 1. Telemetria e Motores
-        print(f"Aeronave: {self.get_modelo().upper()} | Operação: TRANSPORTE DE PASSAGEIROS")
+        print(f"Aeronave: {self.get_modelo()} | Operação: TRANSPORTE DE PASSAGEIROS")
         print(f"Propulsão: {self.get_num_motores()} turbofan(s) comerciais de alto bypass | Status: OPERACIONAL")
         print(f"Capacidade de Carga: TOW máx {self.get_peso_decolagem()} kg | Combustível FOB: {self.get_combustivel()} kg")
         time.sleep(1.0)
 
         # 2. Performance e Navegação
-        print(f"Teto de Cruzeiro Homologado: FL{self.get_altitude_cruzeiro() // 100} ({self.get_altitude_cruzeiro()} ft)")
+        print(f"Teto de Cruzeiro Homologado: FL{int(self.get_altitude_cruzeiro()) // 100} ({self.get_altitude_cruzeiro()} ft)")
         print(f"Velocidade Limite (VMO/MMO): {self.get_velocidade_maxima()} MACH")
         print("Sistemas Aviônicos: TCAS II integrado | FMS/RNAV calibrado | Weather Radar ativo")
         time.sleep(1.2)
@@ -353,6 +389,8 @@ def exibir_opcoes():
     print("1. Cadastrar aviao militar")
     print("2. Cadastrar aviao comercial")
     print("3. Exibir status de todos os avioes")
+    print("4. Decolar todos os avioes")
+    print("5. Pousar todos os avioes")
 
 def main():
     while True:
@@ -371,12 +409,36 @@ def main():
             cadastrar_aviao_comercial()
         elif modo == 3:
             exibir_status_avioes()
+        elif modo == 4:
+            decolar_todos_avioes()
+        elif modo == 5:
+            pousar_todos_avioes()
         else:
             print("[ERRO]: Modo invalido")
 
 def exibir_status_avioes():
-    for aviao in avioes:
-        aviao.status_aeronave()
+    if avioes:
+        for aviao in avioes:
+            aviao.status_aeronave()
+    else:
+        print("[AVISO]: Você não possui avioes cadastrados")
+        return
+
+def decolar_todos_avioes():
+    if avioes:
+        for aviao in avioes:
+            aviao.decolar()
+    else:
+        print("[AVISO]: Você não possui avioes cadastrados")
+        return
+
+def pousar_todos_avioes():
+    if avioes:
+        for aviao in avioes:
+            aviao.pousar()
+    else:
+        print("[AVISO]: Você não possui avioes cadastrados")
+        return
 
 def cadastrar_aviao_comercial():
     try:
@@ -405,10 +467,10 @@ def cadastrar_aviao_comercial():
             raise ValueError("[ERRO]: Peso de decolagem invalido, deve ser maior que 2100kg")
 
         numero_assentos = input("Digite o numero de assentos de sua aeronave: ")
-        if not numero_assentos or numero_assentos.isdigit() or int(numero_assentos) <= 0:
+        if not numero_assentos or not numero_assentos.isdigit() or int(numero_assentos) <= 0:
             raise ValueError("[ERRO]: O numero de assentos deve ser maior que 0")
 
-        novo_aviao = AviaoComercial(modelo, num_motores, altitude_cruzeiro, velocidade_maxima, combustivel, peso_decolagem, numero_assentos)
+        novo_aviao = AviaoComercial(modelo, num_motores, altitude_cruzeiro, velocidade_maxima, combustivel, peso_decolagem, False, numero_assentos)
         avioes.append(novo_aviao)
         print("[SUCESSO]: Avião cadastrado com sucesso!")
     except ValueError as erro:
@@ -461,7 +523,7 @@ def cadastrar_aviao_militar():
             indice_armamento += 1
             verificar_parada = armamento.lower()
 
-        novo_aviao = AviaoMilitar(modelo, num_motores, altitude_cruzeiro, velocidade_maxima, combustivel, peso_decolagem, armamentos)
+        novo_aviao = AviaoMilitar(modelo, num_motores, altitude_cruzeiro, velocidade_maxima, combustivel, peso_decolagem, False, armamentos)
         avioes.append(novo_aviao)
         print("[SUCESSO]: Avião cadastrado com sucesso!")
     except ValueError as erro:
