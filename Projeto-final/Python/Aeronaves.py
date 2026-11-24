@@ -86,9 +86,9 @@ class AviaoMilitar(Aeronave):
         time.sleep(1.0)
 
         # 3. Corrida na pista e velocidades de decisão
-        v1 = int(self.get_velocidade_maxima()) * 0.12
-        vr = int(self.get_velocidade_maxima()) * 0.14
-        v2 = int(self.get_velocidade_maxima()) * 0.17
+        v1 = float(self.get_velocidade_maxima()) * 0.12
+        vr = float(self.get_velocidade_maxima()) * 0.14
+        v2 = float(self.get_velocidade_maxima()) * 0.17
 
         print("Pós-combustores ligados! Manetes no máximo (FULL AFTERBURNER)!")
         for v in [
@@ -250,9 +250,9 @@ class AviaoComercial(Aeronave):
         time.sleep(1.0)
 
         # 3. Corrida de pista e velocidades operacionais
-        v1 = int(self.get_velocidade_maxima()) * 0.15
-        vr = int(self.get_velocidade_maxima()) * 0.17
-        v2 = int(self.get_velocidade_maxima()) * 0.20
+        v1 = float(self.get_velocidade_maxima()) * 0.15
+        vr = float(self.get_velocidade_maxima()) * 0.17
+        v2 = float(self.get_velocidade_maxima()) * 0.20
 
         print("Potência de decolagem ajustada (FLEX/TOGA). Corrida iniciada.")
         etapas_decolagem = [
