@@ -85,17 +85,19 @@ class AviaoMilitar(Aeronave):
         print("TORRE: Decolagem tática autorizada pista 01, vento calmo.", "ATC")
         time.sleep(1.0)
 
+        CONVERTER_MACH = 661.47 # Para converter de MACH para kt
+
         # 3. Corrida na pista e velocidades de decisão
-        v1 = float(self.get_velocidade_maxima()) * 0.12
-        vr = float(self.get_velocidade_maxima()) * 0.14
-        v2 = float(self.get_velocidade_maxima()) * 0.17
+        v1 = (float(self.get_velocidade_maxima()) * CONVERTER_MACH) * 0.12
+        vr = (float(self.get_velocidade_maxima()) * CONVERTER_MACH) * 0.14
+        v2 = (float(self.get_velocidade_maxima()) * CONVERTER_MACH) * 0.17
 
         print("Pós-combustores ligados! Manetes no máximo (FULL AFTERBURNER)!")
         for v in [
             print(f"100 nós - Pressão hidráulica e bocal checados (Velocidade: {int(v1 * 0.6)} kt)", 1.2),
-            print(f"V1 atingida ({v1} kt) - Ponto de não-retorno", 1.5),
-            print(f"VR ({vr} kt) - ROTACIONAR! Puxando manche", 1.2),
-            print(f"V2 ({v2} kt) - Sustentação positiva e separação da pista", 1.0)
+            print(f"V1 atingida ({v1:.2f} kt) - Ponto de não-retorno", 1.5),
+            print(f"VR ({vr:.2f} kt) - ROTACIONAR! Puxando manche", 1.2),
+            print(f"V2 ({v2:.2f} kt) - Sustentação positiva e separação da pista", 1.0)
         ]:
             time.sleep(1.5)
 
@@ -249,17 +251,19 @@ class AviaoComercial(Aeronave):
         print("TORRE: Decolagem comercial autorizada, pista 09R, vento 080 a 10 nós.", "ATC")
         time.sleep(1.0)
 
+        CONVERTER_MACH = 661.47 # Para converter de MACH para kt
+
         # 3. Corrida de pista e velocidades operacionais
-        v1 = float(self.get_velocidade_maxima()) * 0.15
-        vr = float(self.get_velocidade_maxima()) * 0.17
-        v2 = float(self.get_velocidade_maxima()) * 0.20
+        v1 = (float(self.get_velocidade_maxima()) * CONVERTER_MACH) * 0.15
+        vr = (float(self.get_velocidade_maxima()) * CONVERTER_MACH) * 0.17
+        v2 = (float(self.get_velocidade_maxima()) * CONVERTER_MACH) * 0.20
 
         print("Potência de decolagem ajustada (FLEX/TOGA). Corrida iniciada.")
         etapas_decolagem = [
             (f"80 nós - Instrumentos checados, aceleração simétrica ({int(v1 * 0.6)} kt)", 1.2),
-            (f"V1 atingida ({v1} kt) - Velocidade de decisão, decolagem comprometida", 1.4),
-            (f"VR ({vr} kt) - ROTACIONAR! Subida suave iniciada", 1.2),
-            (f"V2 ({v2} kt) - Velocidade de segurança e razão de subida positiva", 1.0)
+            (f"V1 atingida ({v1:.2f} kt) - Velocidade de decisão, decolagem comprometida", 1.4),
+            (f"VR ({vr:.2f} kt) - ROTACIONAR! Subida suave iniciada", 1.2),
+            (f"V2 ({v2:.2f} kt) - Velocidade de segurança e razão de subida positiva", 1.0)
         ]
 
         for mensagem, pausa in etapas_decolagem:
